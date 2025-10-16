@@ -6,6 +6,7 @@ using static Platformer.Core.Simulation;
 using Platformer.Model;
 using Platformer.Core;
 using UnityEngine.InputSystem;
+using JetBrains.Annotations;
 
 namespace Platformer.Mechanics
 {
@@ -34,6 +35,11 @@ namespace Platformer.Mechanics
         /*internal new*/ public AudioSource audioSource;
         public Health health;
         public bool controlEnabled = true;
+        /// <summary>
+        /// Maximum jumps before hitting the ground at least once
+        /// </summary>
+        public int maxJumps = 2;
+        private int jumpsLeft;
 
         bool jump;
         Vector2 move;
@@ -53,6 +59,7 @@ namespace Platformer.Mechanics
             collider2d = GetComponent<Collider2D>();
             spriteRenderer = GetComponent<SpriteRenderer>();
             animator = GetComponent<Animator>();
+            jumpsLeft = maxJumps;
 
             m_MoveAction = InputSystem.actions.FindAction("Player/Move");
             m_JumpAction = InputSystem.actions.FindAction("Player/Jump");
@@ -66,7 +73,7 @@ namespace Platformer.Mechanics
             if (controlEnabled)
             {
                 move.x = m_MoveAction.ReadValue<Vector2>().x;
-                if (jumpState == JumpState.Grounded && m_JumpAction.WasPressedThisFrame())
+                if ((jumpState == JumpState.Grounded || jumpsLeft > 0) && m_JumpAction.WasPressedThisFrame())
                     jumpState = JumpState.PrepareToJump;
                 else if (m_JumpAction.WasReleasedThisFrame())
                 {
@@ -91,6 +98,7 @@ namespace Platformer.Mechanics
                     jumpState = JumpState.Jumping;
                     jump = true;
                     stopJump = false;
+                    jumpsLeft--;
                     break;
                 case JumpState.Jumping:
                     if (!IsGrounded)
@@ -108,6 +116,7 @@ namespace Platformer.Mechanics
                     break;
                 case JumpState.Landed:
                     jumpState = JumpState.Grounded;
+                    jumpsLeft = maxJumps;
                     break;
             }
         }
