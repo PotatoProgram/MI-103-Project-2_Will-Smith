@@ -123,7 +123,7 @@ namespace Platformer.Mechanics
 
         protected override void ComputeVelocity()
         {
-            if (jump && IsGrounded)
+            if (jump)
             {
                 velocity.y = jumpTakeOffSpeed * model.jumpModifier;
                 jump = false;
