@@ -6,7 +6,6 @@ using static Platformer.Core.Simulation;
 using Platformer.Model;
 using Platformer.Core;
 using UnityEngine.InputSystem;
-using JetBrains.Annotations;
 
 namespace Platformer.Mechanics
 {
